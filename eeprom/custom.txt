@@ -1,0 +1,1 @@
+trig=4;dial=5;hang=6;ring=18;led1=19;led2=20;led3=21

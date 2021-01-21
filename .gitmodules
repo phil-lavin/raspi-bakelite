@@ -1,0 +1,3 @@
+[submodule "eeprom/hats"]
+	path = eeprom/hats
+	url = https://github.com/raspberrypi/hats

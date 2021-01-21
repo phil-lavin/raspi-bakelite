@@ -1,0 +1,100 @@
+/dts-v1/;
+/plugin/;
+
+/{
+    compatible = "brcm,bcm2835", "brcm,bcm2708", "brcm,bcm2709";
+
+    // Set up our 3 on board LEDs. These will be created in /sys/class/leds
+    fragment@0 {
+        target = <&leds>;
+        __overlay__ {
+            led_bakelite_red: bakelite-red {
+                label = "bakelite-red";
+                gpios = <&gpio 19 0>; /* gpio 19 */
+                linux,default-trigger = "none";
+            };
+            led_bakelite_orange: bakelite-orange {
+                label = "bakelite-orange";
+                gpios = <&gpio 20 0>; /* gpio 20 */
+                linux,default-trigger = "none";
+            };
+            led_bakelite_green: bakelite-green {
+                label = "bakelite-green";
+                gpios = <&gpio 21 0>; /* gpio 21 */
+                linux,default-trigger = "none";
+            };
+        };
+    };
+
+    // Set up our trig, dial and hang inputs
+    fragment@1 {
+        target = <&gpio>;
+        __overlay__ {
+            trig_pin: trig_pin {
+                brcm,pins = <4>;     /* gpio4 */
+                brcm,function = <0>; /* input */
+                brcm,pull = <1>;     /* pull-down */
+            };
+            dial_pin: dial_pin {
+                brcm,pins = <5>;     /* gpio5 */
+                brcm,function = <0>; /* input */
+                brcm,pull = <1>;     /* pull-down */
+            };
+            hang_pin: hang_pin {
+                brcm,pins = <6>;     /* gpio6 */
+                brcm,function = <0>; /* input */
+                brcm,pull = <1>;     /* pull-down */
+            };
+        };
+    };
+
+    // Map the trig, dial and hang buttons to key codes (https://github.com/torvalds/linux/blob/v4.19/include/uapi/linux/input-event-codes.h#L341)
+    // This also adds them as devices in /dev/input/by-path/
+    fragment@2 {
+        target-path = "/soc";
+        __overlay__ {
+            trig: trig {
+                compatible = "gpio-keys";
+                #address-cells = <1>;
+                #size-cells = <0>;
+                pinctrl-names = "default";
+                pinctrl-0 = <&trig_pin>;
+                status = "okay";
+
+                trig@4 {
+                    label = "trig buton";
+                    linux,code = <0x104>;
+                    gpios = <&gpio 4 0>;
+                };
+            };
+            dial: dial {
+                compatible = "gpio-keys";
+                #address-cells = <1>;
+                #size-cells = <0>;
+                pinctrl-names = "default";
+                pinctrl-0 = <&dial_pin>;
+                status = "okay";
+
+                dial@5 {
+                    label = "dial buton";
+                    linux,code = <0x105>;
+                    gpios = <&gpio 5 0>;
+                };
+            };
+            hang: hang {
+                compatible = "gpio-keys";
+                #address-cells = <1>;
+                #size-cells = <0>;
+                pinctrl-names = "default";
+                pinctrl-0 = <&hang_pin>;
+                status = "okay";
+
+                hang@6 {
+                    label = "hang buton";
+                    linux,code = <0x106>;
+                    gpios = <&gpio 6 0>;
+                };
+            };
+        };
+    };
+};

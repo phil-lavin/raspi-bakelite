@@ -23,7 +23,11 @@ The Gerber CAM files which have been built to the Design Rules of [Elecrow](http
 
 This is what a rendering of the top and bottom of the board looks like:
 
+### Top
+
 <img src="https://raw.githubusercontent.com/phil-lavin/raspi-bakelite/master/hat/gerbers/images/top.svg" width="100%" alt="Top of Board">
+
+### Bottom
 
 <img src="https://raw.githubusercontent.com/phil-lavin/raspi-bakelite/master/hat/gerbers/images/bottom.svg" width="100%" alt="Bottom of Board">
 

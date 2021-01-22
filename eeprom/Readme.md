@@ -17,7 +17,7 @@ The EEPROM chip has a few pins:
 * A0, A1, A2: These are the pins to set the I2C address of the EEPROM. They make up a 3 bit address, giving 8 possible addresses. Tying all 3 pins to GND makes the address 0x50, which is what the Pi Hat specification requires
 * WP: This is the Write Protect pin. It should be tied to 3.3V if you want to prevent writing to the EEPROM. For the purpose of testing/programming the EEPROM, tie this to GND or leave it floating
 
-Here is the Eagle schematic for this part of the Hat:
+Here is the Eagle schematic for this part of the Hat. VCCIO is the 3.3V line from the Pi.
 
 ![EEPROM Schematic](https://github.com/phil-lavin/raspi-bakelite/blob/master/eeprom/schematic.png?raw=true) 
 

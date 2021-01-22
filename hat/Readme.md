@@ -15,6 +15,9 @@ Here is the Eagle schematic for the hat:
 
 The actual Eagle schematic file is also in this directory (the `.sch` file).
 
+The schematic is focussed around the Raspberry Pi's 40 pin connector. This is just a 40 pin female connector, correctly positioned, on the Hat board such that 
+the Hat sits directly on top of the Pi.
+
 The schematic looks complicated but it's actually just a bunch of simple circuits all stitched together. These are:
 
 ### 12v Input (Middle Left of Schematic)

@@ -13,5 +13,5 @@ Component Directories
 
 Below is a list of the components of this project. Each has its own Readme.md.
 
-* eeprom: Contains all of the code held on the hat's 64Kb EEPROM chip
+* eeprom: Contains all of the code held on the hat's 64Kbit EEPROM chip
 * hat: Contains schematics, board designs and Gerber files for the custom designed Pi Hat

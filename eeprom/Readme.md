@@ -3,7 +3,7 @@ Raspberry Pi Bakelite Phone VoIP Interface Board - EEPROM
 
 ## Intro
 
-It is a requirement of [Pi Hats](https://github.com/raspberrypi/hats) to have an EEPROM chip at least 32Kb in size connected to the ID (ID_SC and ID_SD) pins of the Pi.
+It is a requirement of [Pi Hats](https://github.com/raspberrypi/hats) to have an EEPROM chip at least 32Kb in size connected to the ID (`ID_SC` and `ID_SD`) pins of the Pi.
 
 The EEPROM chip should contain a number of components, in a [defined format](https://github.com/raspberrypi/hats/blob/master/eeprom-format.md), which describe the Hat, its GPIO usage and its Linux device tree. You can also include custom data.
 
@@ -36,7 +36,7 @@ Below is a list of the files in this directory and a description of them:
 
 ## Flashing the EEPROM
 
-The EEPROM running on this Hat is a 24LC64 64Kb chip. The Pi Model B+ has 2 I2C busses, numbered 0 and 1. Bus 0 is the ID pins (27 and 28) and bus 1 is the SDA/SCL pins (3 and 5).
+The EEPROM running on this Hat is a `24LC64` 64Kbit chip. The Pi Model B+ has 2 I2C busses, numbered 0 and 1. Bus 0 is the ID pins (27 and 28) and bus 1 is the `SDA`/`SCL` pins (3 and 5).
 
 The Hat specification states that the I2C address of the EEPROM must be 0x50.
 
@@ -44,7 +44,7 @@ The process of flashing the EEPROM is:
 
 * Compile the raspi-bakelie.dts file using dtc
 * Build the EEPROM data image from the settings file, device tree and custom data files
-* Flatten the EEPROM by writing 32Kb of 0s to it
+* Flatten the EEPROM by writing 32Kbit of 0s to it (to save time as the actual EEPROM data is < 32Kbit)
 * Write the data image we built to the chip
 
 Flashing is done using the flasheep.sh wrapper script:

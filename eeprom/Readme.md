@@ -156,10 +156,12 @@ This maps the GPIO pins used by the LEDs on the Hat to /sys/class/leds/. This is
 Turning on/off the LEDs is a simple as writing 1 or 0 to the brightness file handle. E.g:
 
 ```
-echo 1 > /sys/class/leds/bakelite-green/brightness
+echo 1 > /sys/class/leds/green/brightness
 ```
 
 This turns on the green LED.
+
+### Ringer
 
 ### 3x "Button" Inputs
 
@@ -189,15 +191,22 @@ Event: time 1611266121.438556, -------------- SYN_REPORT ------------
 
 This is a GPIO output which, via a transistor and basic 5v inverter, drives the INHIBIT pin on the ring generator. When this pin is HIGH, the phone rings, when it is LOW the phone stops 
 
-@TODO: Figure out and document this
+The ringer output pin is mapped as an LED. There doesn't seem to be a more sensible output driver in Linux, so this'll have to do. It doesn't really matter - we only need a way to
+turn it on and off on demand.
+
+```
+echo 1 > /sys/class/leds/ringer/brightness
+```
+
+This turns the ringer on.
 
 ## Testing
 
 You can see the device tree and hat config as it has been translated to the file system with a few different commands:
 
 ```
-root@roto-voip:~/raspi-bakelite/eeprom# ls /sys/class/leds/
-bakelite-green	bakelite-orange  bakelite-red  led0  led1
+root@roto-voip:~# ls /sys/class/leds/
+green  led0  led1  orange  red	ringer
 
 
 root@roto-voip:~/raspi-bakelite/eeprom# ls /dev/input/by-path/
@@ -214,7 +223,7 @@ root@roto-voip:~/raspi-bakelite/eeprom# grep -a '' /proc/device-tree/hat/*
 /proc/device-tree/hat/vendor:Phil Lavin
 
 
-root@roto-voip:~/raspi-bakelite/eeprom# raspi-gpio get
+root@roto-voip:~/raspi-bakelite# raspi-gpio get
 BANK0 (GPIO 0 to 27):
 GPIO 0: level=1 fsel=4 alt=0 func=SDA0
 GPIO 1: level=1 fsel=4 alt=0 func=SCL0
@@ -237,7 +246,7 @@ GPIO 17: level=0 fsel=0 func=INPUT
 GPIO 18: level=0 fsel=1 func=OUTPUT
 GPIO 19: level=0 fsel=1 func=OUTPUT
 GPIO 20: level=0 fsel=1 func=OUTPUT
-GPIO 21: level=1 fsel=1 func=OUTPUT
+GPIO 21: level=0 fsel=1 func=OUTPUT
 GPIO 22: level=0 fsel=0 func=INPUT
 GPIO 23: level=0 fsel=0 func=INPUT
 GPIO 24: level=0 fsel=0 func=INPUT

@@ -4,22 +4,28 @@
 /{
     compatible = "brcm,bcm2835", "brcm,bcm2708", "brcm,bcm2709";
 
-    // Set up our 3 on board LEDs. These will be created in /sys/class/leds
+    // Set up our ringer and 3 on board LEDs. These will be created in /sys/class/leds
+    // Ringer (obviously) isn't an LED but there doesn't seem to be a more sensible control driver in Linux
     fragment@0 {
         target = <&leds>;
         __overlay__ {
-            led_bakelite_red: bakelite-red {
-                label = "bakelite-red";
+            output_ringer: ringer {
+                label = "ringer";
+                gpios = <&gpio 18 0>; /* gpio 18 */
+                linux,default-trigger = "none";
+            };
+            led_red: red {
+                label = "red";
                 gpios = <&gpio 19 0>; /* gpio 19 */
                 linux,default-trigger = "none";
             };
-            led_bakelite_orange: bakelite-orange {
-                label = "bakelite-orange";
+            led_orange: orange {
+                label = "orange";
                 gpios = <&gpio 20 0>; /* gpio 20 */
                 linux,default-trigger = "none";
             };
-            led_bakelite_green: bakelite-green {
-                label = "bakelite-green";
+            led_green: green {
+                label = "green";
                 gpios = <&gpio 21 0>; /* gpio 21 */
                 linux,default-trigger = "none";
             };

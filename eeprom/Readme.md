@@ -190,3 +190,58 @@ Event: time 1611266121.438556, -------------- SYN_REPORT ------------
 This is a GPIO output which, via a transistor and basic 5v inverter, drives the INHIBIT pin on the ring generator. When this pin is HIGH, the phone rings, when it is LOW the phone stops 
 
 @TODO: Figure out and document this
+
+## Testing
+
+You can see the device tree and hat config as it has been translated to the file system with a few different commands:
+
+```
+root@roto-voip:~/raspi-bakelite/eeprom# ls /sys/class/leds/
+bakelite-green	bakelite-orange  bakelite-red  led0  led1
+
+
+root@roto-voip:~/raspi-bakelite/eeprom# ls /dev/input/by-path/
+platform-20980000.usb-usb-0:1.2:1.3-event  platform-soc:dial-event  platform-soc:hang-event  platform-soc:trig-event
+
+
+root@roto-voip:~/raspi-bakelite/eeprom# grep -a '' /proc/device-tree/hat/*
+/proc/device-tree/hat/custom_0:trig=4;dial=5;hang=6;ring=18;led1=19;led2=20;led3=21
+/proc/device-tree/hat/name:hat
+/proc/device-tree/hat/product:Bakelite Interface Board
+/proc/device-tree/hat/product_id:0x0001
+/proc/device-tree/hat/product_ver:0x0002
+/proc/device-tree/hat/uuid:79f507e0-5b6f-11eb-ae93-0242ac130002
+/proc/device-tree/hat/vendor:Phil Lavin
+
+
+root@roto-voip:~/raspi-bakelite/eeprom# raspi-gpio get
+BANK0 (GPIO 0 to 27):
+GPIO 0: level=1 fsel=4 alt=0 func=SDA0
+GPIO 1: level=1 fsel=4 alt=0 func=SCL0
+GPIO 2: level=1 fsel=4 alt=0 func=SDA1
+GPIO 3: level=1 fsel=4 alt=0 func=SCL1
+GPIO 4: level=0 fsel=0 func=INPUT
+GPIO 5: level=0 fsel=0 func=INPUT
+GPIO 6: level=0 fsel=0 func=INPUT
+GPIO 7: level=1 fsel=0 func=INPUT
+GPIO 8: level=1 fsel=0 func=INPUT
+GPIO 9: level=0 fsel=0 func=INPUT
+GPIO 10: level=0 fsel=0 func=INPUT
+GPIO 11: level=0 fsel=0 func=INPUT
+GPIO 12: level=0 fsel=0 func=INPUT
+GPIO 13: level=0 fsel=0 func=INPUT
+GPIO 14: level=1 fsel=4 alt=0 func=TXD0
+GPIO 15: level=1 fsel=4 alt=0 func=RXD0
+GPIO 16: level=0 fsel=0 func=INPUT
+GPIO 17: level=0 fsel=0 func=INPUT
+GPIO 18: level=0 fsel=1 func=OUTPUT
+GPIO 19: level=0 fsel=1 func=OUTPUT
+GPIO 20: level=0 fsel=1 func=OUTPUT
+GPIO 21: level=1 fsel=1 func=OUTPUT
+GPIO 22: level=0 fsel=0 func=INPUT
+GPIO 23: level=0 fsel=0 func=INPUT
+GPIO 24: level=0 fsel=0 func=INPUT
+GPIO 25: level=0 fsel=0 func=INPUT
+GPIO 26: level=0 fsel=0 func=INPUT
+GPIO 27: level=1 fsel=0 func=INPUT
+```

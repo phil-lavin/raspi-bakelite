@@ -128,6 +128,7 @@ A few useful references:
 * https://github.com/torvalds/linux/blob/v4.19/include/uapi/linux/input-event-codes.h#L341
 * https://www.kernel.org/doc/Documentation/devicetree/bindings/input/gpio-keys.txt
 * https://learn.sparkfun.com/tutorials/reading-and-writing-serial-eeproms/all
+* https://www.raspberrypi.org/documentation/configuration/device-tree.md
 
 The raspi-bakelite.dts file defines the changes to the Linux Device Tree that should be made when the Pi boots.
 

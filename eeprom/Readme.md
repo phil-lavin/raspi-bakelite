@@ -7,6 +7,20 @@ It is a requirement of [Pi Hats](https://github.com/raspberrypi/hats) to have an
 
 The EEPROM chip should contain a number of components, in a [defined format](https://github.com/raspberrypi/hats/blob/master/eeprom-format.md), which describe the Hat, its GPIO usage and its Linux device tree. You can also include custom data.
 
+## Schematic
+
+The EEPROM chip has a few pins:
+
+* SDA/SCL: These are the I2C data lines - they connect to the matching pins on the Pi. They also need to be pulled up, via 3.9k resistors, to the 3.3V VCC
+* VCC: 3.3V power input
+* GND: Ground connection
+* A0, A1, A2: These are the pins to set the I2C address of the EEPROM. They make up a 3 bit address, giving 8 possible addresses. Tying all 3 pins to GND makes the address 0x50, which is what the Pi Hat specification requires
+* WP: This is the Write Protect pin. It should be tied to 3.3V if you want to prevent writing to the EEPROM. For the purpose of testing/programming the EEPROM, tie this to GND or leave it floating
+
+Here is the Eagle schematic for this part of the Hat:
+
+![EEPROM Schematic](https://github.com/phil-lavin/raspi-bakelite/blob/master/eeprom/schematic.png?raw=true) 
+
 ## Files
 
 Below is a list of the files in this directory and a description of them:
@@ -18,6 +32,7 @@ Below is a list of the files in this directory and a description of them:
 * flasheep.sh: Wrapper script around other tools to flash the EEPROM
 * hats/: Git submodule of [Pi Hats](https://github.com/raspberrypi/hats) which contains the tools to build and flash the EEPROM data
 * raspi-bakelite.dts: Device Tree definition file for the hat (described in much more depth below!)
+* schematic.png: The schematic of the circuit which connects the EEPROM to the Pi
 
 ## Flashing the EEPROM
 

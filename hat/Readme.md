@@ -77,6 +77,9 @@ The board contains 3 LEDs, each connected via a resistor, to the Pi's GPIO pins.
 
 The Gerber CAM files which have been built to the Design Rules of [Elecrow](https://www.elecrow.com/pcb-manufacturing.html) are in the gerbers directory.
 
+There is a very small cutout at the edge of the board above pin 6 of the GPIO connector. This is just because of the way the Pi is positioned in the Bakelite phone, the Hat needs 
+some provision for a bit of metalwork which exists in that space.
+
 This is what a rendering of the top and bottom of the board looks like:
 
 ### Top

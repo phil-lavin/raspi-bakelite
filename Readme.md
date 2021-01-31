@@ -15,3 +15,4 @@ Below is a list of the components of this project. Each has its own Readme.md.
 
 * eeprom: Contains all of the code held on the hat's 64Kbit EEPROM chip
 * hat: Contains schematics, board designs and Gerber files for the custom designed Pi Hat
+* ringer: Contains details of the original ringer bell of the Bakelite phone and how it's powered in the VoIP conversion

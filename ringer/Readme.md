@@ -41,3 +41,16 @@ When connected up to a scope, this is what the wave looks like:
 
 You can see that the wave is around 63V RMS at 20Hz. When connected to the solenoid, it makes a fantastic 
 original sound.
+
+## Circuit
+
+The circuit to control the `PCR-SIN03V12F20-C` is pretty simple:
+
+![PCR-SIN03V12F20-C Control Circuit](images/ringer-circuit.png)
+
+The `PCR-SIN03V12F20-C` ringer module takes a 12V power and GND input (pins 3 and 4) and it outputs to the Bakelite's original ringer (pins 1 and 2). Pin 6 of the ringer module is the `INHIBIT` pin. This 
+pin takes a 5V logic input and when it's held high, the ringer stops outputting. When the pin is held low, the ringer outputs (and thus the bell rings). Because the Pi 
+doesn't have any 5V GPIOs, this is fed via a transistor and simple inverter circuit. Under normal operation, the pin is tied directly to the 5V line via a 10K resistor. 
+When the Pi's GPIO output goes high, this "opens up" the transistor and pulls the `INHIBIT` pin to GND. This makes the bell ring.
+
+In essence, when the Pi's GPIO is high, the bell rings. When it's low, it doesn't.

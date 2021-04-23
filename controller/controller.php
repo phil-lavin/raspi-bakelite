@@ -3,10 +3,7 @@
 require_once 'vendor/autoload.php';
 require_once 'lib/BareSip.php';
 
-// Config
-$logFile = STDOUT;
-$logLevel = \Monolog\Logger::INFO;
-// End Config
+require_once 'config.php';
 
 $log = new \Monolog\Logger('bakelite');
 $log->pushHandler(new \Monolog\Handler\StreamHandler($logFile, $logLevel));

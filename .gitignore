@@ -1,2 +1,3 @@
 eeprom/*.eep
 eeprom/raspi-bakelite.dtb
+controller/vendor

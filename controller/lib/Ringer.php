@@ -13,6 +13,9 @@ class Ringer {
 	protected $intervals;
 
 	protected $ringing = false;
+	protected $runningItervals = NULL;
+
+	protected $timerName = 'currentBellInterval';
 
 	public function __construct(\Monolog\Logger $logger, TimerManager $timerManager, $ringerFile) {
 		$this->log = $logger;
@@ -37,10 +40,9 @@ class Ringer {
 
 	// Adds an interval of a given type for $time useconds
 	protected function addInterval($state, $time) {
-		// Build interval with time in decimal seconds
 		$this->intervals[] = [
 			'state' => $state,
-			'time' => $time / 1000000,
+			'time' => $time,
 		];
 
 		return $this;
@@ -54,6 +56,53 @@ class Ringer {
 
 	// Asyncronously ring the bell using timers
 	public function ring() {
+		// If we're not currently ringing, start
+		if ( ! $this->isRinging()) {
+			$this->runningIntervals = $this->intervals;
+			$this->ringing = true;
 
+			// Trigger the first interval
+			return $this->ringNext();
+		}
+
+		// Otherwise treat this as a wrapper to run the timer manager timers
+		return $this->timerManager->run();
+	}
+
+	// Turn off and reset the bell state
+	public function stop() {
+		$this->timerManager->removeTimerByName($this->timerName);
+		$this->setBellState(false);
+		$this->runningIntervals = NULL;
+	}
+
+	// Sets the on/off state of the bell
+	protected function setBellState(bool $state) {
+		$state = (string)(int)$state;
+
+		$this->log->debug("Setting bell state to $state");
+		fwrite($this->ringer, (string)(int)$state, 1);
+	}
+
+	protected function ringNext() {
+		// Get the interval that we need to run now
+		$interval = current($this->runningIntervals);
+
+		// Toggle the bell as per the current interval
+		$this->setBellState($interval['state']);
+
+		// Set a timer to advance to the next state
+		$timer = new Timer($interval['time'], function() {
+			// Remove the current timer from the timer manager so we can add the new one
+			$this->timerManager->removeTimerByName($this->timerName);
+			// Advance the array pointer to either the next item or the first item if we hit the end
+			next($this->runningIntervals) or reset($this->runningIntervals);
+
+			// Trigger the next interval
+			$this->ringNext();
+		}, 1);
+
+		// Add to the timer manager
+		$this->timerManager->addTimer($timer, $this->timerName);
 	}
 }

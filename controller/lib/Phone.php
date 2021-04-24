@@ -53,4 +53,19 @@ class Phone {
 
 		return $this->offHook;
 	}
+
+	// Gets the Ringer instance of this Phone
+	public function getRinger() {
+		return $this->ringer;
+	}
+
+	// Rings the ringer
+	public function ring() {
+		return $this->getRinger()->ring();
+	}
+
+	// Stops the ringer ringing
+	public function stopRinging() {
+		return $this->getRinger()->stop();
+	}
 }

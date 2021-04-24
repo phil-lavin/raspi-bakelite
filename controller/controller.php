@@ -38,7 +38,10 @@ try {
 		if ($phone->isOffHook()) return;
 
 		var_dump($event);
-		$bareSip->sendCommand('accept');
+		//$bareSip->sendCommand('accept');
+
+		$phone->stopRinging();
+		$phone->ring();
 	});
 
 	// Event loop

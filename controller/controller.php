@@ -15,8 +15,24 @@ use \Bakelite\BareSip;
 use \Bakelite\Phone;
 use \Bakelite\Ringer;
 
+// Monolog Logger
 $log = new Logger('bakelite');
 $log->pushHandler(new StreamHandler($logFile, $logLevel));
+
+// Clean up when we shut down
+register_shutdown_function(function() use ($log) {
+	$log->info("Shutdown detected. Cleaning up");
+
+	// Should cause the destructor to be run
+	if (isset($phone))
+		unset($phone);
+});
+
+// It seems that PHP doesn't trigger the shutdown function when you send SIGINT (ctrl+c)
+declare(ticks = 1);
+pcntl_signal(SIGINT, function() {
+	exit();
+});
 
 try {
 	// Set up a new TimerManager to be used for co-ordinating async tasks

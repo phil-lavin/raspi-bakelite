@@ -45,4 +45,15 @@ class Ringer {
 
 		return $this;
 	}
+
+	// Returns true if this ringer is currently in the ringing state
+	// Ringing doesn't mean the bell is on, just that it's going through a ring cycle currently
+	public function isRinging() {
+		return $this->ringing;
+	}
+
+	// Asyncronously ring the bell using timers
+	public function ring() {
+
+	}
 }

@@ -42,9 +42,9 @@ class TimerManager {
 		foreach ($this->timers as $timer) {
 			try {
 				$timer->run();
-				$count++; // Increment count if timer->run() didn't throw a NotTimeYetException
+				$count++; // Increment count if timer->run() didn't throw a normal exception
 			}
-			catch (NotTimeYetException $e) {}
+			catch (TimerNormalException $e) {}
 		}
 
 		return $count;

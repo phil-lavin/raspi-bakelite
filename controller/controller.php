@@ -65,8 +65,11 @@ try {
 	$phone = new Phone($log, $timerManager, $ringer, $eventLoop);
 
 	// Decorate the dial plans
-	$dialPlan = (new ExtensionDialPlan($log, new UKDialPlan($log)))
-		->addExtensionRange(201,205);
+	$dialPlan = (new ExtensionDialPlan($log, new UKDialPlan($log)));
+
+	foreach ($extensions as $extension) {
+		$dialPlan->addExtensionRange(...$extension);
+	}
 
 	// This object records the number currently being dialled
 	$dialString = new DialString($log, $timerManager, $dialPlan);

@@ -76,6 +76,7 @@ class Ringer {
 		$this->timerManager->removeTimerByName($this->timerName);
 		$this->setBellState(false);
 		$this->runningIntervals = NULL;
+		$this->ringing = false;
 	}
 
 	// Sets the on/off state of the bell

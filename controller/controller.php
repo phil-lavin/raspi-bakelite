@@ -64,11 +64,25 @@ try {
 	$bareSip->addEventListener('CALL_INCOMING', function($event) use ($bareSip, $phone) {
 		if ($phone->isOffHook()) return;
 
-		var_dump($event);
-		//$bareSip->sendCommand('accept');
-
 		$phone->stopRinging();
 		$phone->ring();
+	});
+
+	// Listen for and handle various Phone events
+	$phone->addEventListener('HANG', function($event) use ($bareSip, $phone) {
+		// Picked up
+		if ($event['value']) {
+			// We are currently ringing, thus this is us answering the call
+			if ($phone->isRinging()) {
+				$phone->stopRinging();
+				$bareSip->sendCommand('accept');
+			}
+		}
+		// Hung up
+		else {
+			// Assume we're on a call and send hangup. We might not be but it doesn't matter
+			$bareSip->sendCommand('hangup');
+		}
 	});
 
 	// Bare sip timeout runner
@@ -83,21 +97,6 @@ try {
 
 	// Run the event loop
 	$eventLoop->run();
-
-	// Event loop
-	/*while (1) {
-		// Poll for messages from BareSIP
-		$bareSip->run(50000); // 0.05 second timeout
-
-		// Run any timers which are due
-		$timerManager->run();
-
-		// Detect phone being off the hook
-		if ($phone->isOffHook()) {
-			var_dump('Phone is off the hook');
-			sleep(1);
-		}
-	}*/
 }
 catch (\RuntimeException $e) {
 	$log->error($e->getMessage());

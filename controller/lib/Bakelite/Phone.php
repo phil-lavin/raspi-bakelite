@@ -35,11 +35,11 @@ class Phone implements Runnable {
 
 	// Registers internal handlers for the input events so we can update our own state
 	protected function registerInputEvents() {
-		$this->getEventLoop()->addEventListener('HANG', function($event) {
+		$this->addEventListener('HANG', function($event) {
 			$this->offHook = (bool)$event['value'];
 		});
 
-		$this->getEventLoop()->addEventListener('TRIG', function($event) {
+		$this->addEventListener('TRIG', function($event) {
 			$this->dialling = (bool)$event['value'];
 		});
 	}
@@ -52,6 +52,11 @@ class Phone implements Runnable {
 	// Returns true if the handset is currently dialling a digit (i.e. the rotary encoder is not at its resting point)
 	public function isDialling() {
 		return $this->dialling;
+	}
+
+	// Proxy method to the Ringer's isRinging() method
+	public function isRinging() {
+		return $this->getRinger()->isRinging();
 	}
 
 	// Gets the Ringer instance of this Phone
@@ -74,7 +79,14 @@ class Phone implements Runnable {
 		return $this->getRinger()->stop();
 	}
 
-	// Triggers the event loop
+	// Proxy method to add an event listener on the event loop
+	public function addEventListener(string $type, callable $callback) {
+		$this->getEventLoop()->addEventListener($type, $callback);
+
+		return $this;
+	}
+
+	// Proxy method to run() on the event loop
 	public function run() {
 		return $this->getEventLoop()->run();
 	}

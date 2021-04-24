@@ -85,13 +85,9 @@ try {
 		}
 	});
 
-	// Bare sip timeout runner
-	$bareSipRunner = new TimedRunner(50000, 5000);
-	$bareSipRunner->addRunnable($bareSip);
-
 	// Event loop runner
-	$eventLoop = new InfinateRunner(1);
-	$eventLoop->addRunnable($bareSipRunner);
+	$eventLoop = new InfinateRunner(500);
+	$eventLoop->addRunnable($bareSip);
 	$eventLoop->addRunnable($timerManager);
 	$eventLoop->addRunnable($phone);
 

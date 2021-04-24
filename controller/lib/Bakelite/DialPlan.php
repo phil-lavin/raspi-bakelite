@@ -6,20 +6,28 @@ use Monolog\Logger;
 
 abstract class DialPlan {
 	protected $log;
+	protected $decorator;
 
 	protected $rules;
 
-	public function __construct(Logger $log) {
+	// Implements the Decorator pattern. Optionally pass a DialPlan object to decorate its functionality
+	public function __construct(Logger $log, DialPlan $decorator = NULL) {
 		$this->log = $log;
+		$this->decorator = $decorator;
 
 		$this->init();
 	}
 
-	// Force child classes to define a timeout value
-	public abstract function getTimeout();
-
 	// Can be used by child classes to initialize stuff
 	public function init() {}
+
+	// Force child classes to define a timeout value
+	protected abstract function timeout();
+
+	// Public method to return the highest timeout from myself or my decoratee
+	public function getTimeout() {
+		return max($this->timeout(), $this->decorator ? $this->decorator->getTimeout() : 0);
+	}
 
 	// Adds a dialplan rule callback
 	public function addRule(Callable $rule) {
@@ -45,6 +53,8 @@ abstract class DialPlan {
 		foreach ($this->rules as $rule) {
 			if ($rule($number)) return true;
 		}
+
+		if ($this->decorator) return $this->decorator->check($number);
 
 		return false;
 	}

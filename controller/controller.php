@@ -14,6 +14,7 @@ use Async\Runner\InfinateRunner;
 use Async\Runner\TimedRunner;
 use EV\EventLoop;
 use Bakelite\DialPlan\UKDialPlan;
+use Bakelite\DialPlan\ExtensionDialPlan;
 use Bakelite\DialString;
 use Bakelite\Digit;
 
@@ -63,8 +64,12 @@ try {
 
 	$phone = new Phone($log, $timerManager, $ringer, $eventLoop);
 
+	// Decorate the dial plans
+	$dialPlan = (new ExtensionDialPlan($log, new UKDialPlan($log)))
+		->addExtensionRange(201,205);
+
 	// This object records the number currently being dialled
-	$dialString = new DialString($log, $timerManager, new UKDialPlan($log));
+	$dialString = new DialString($log, $timerManager, $dialPlan);
 
 	// This object records the digit currently being dialled
 	$digit = new Digit();
@@ -114,8 +119,10 @@ try {
 			$dialString->addDigit($digit->stop());
 
 			// If we have a complete number, dial it
-			if ($dialString->isComplete())
+			if ($dialString->isComplete()) {
 				$bareSip->call($dialString);
+				$dialString->reset();
+			}
 		}
 	});
 

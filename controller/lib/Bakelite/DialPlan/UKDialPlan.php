@@ -12,7 +12,7 @@ class UKDialPlan extends DialPlan {
 		$this->addRegex('/0[0-9]{10}/');
 	}
 
-	public function getTimeout() {
+	protected function timeout() {
 		return $this->timeout;
 	}
 }

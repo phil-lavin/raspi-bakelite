@@ -25,6 +25,11 @@ class Phone {
 		$this->dialler = $this->openHandle($dialler, 'rb');
 	}
 
+	public function __destruct() {
+		// Stop ringing when the code exits or the bell may get stuck on
+		$this->stopRinging();
+	}
+
 	// Opens a file handle to a given file, doing some sanity checks and turning them into exceptions
 	protected function openHandle(string $file, string $mode) {
 		return Util::openHandle($file, $mode);

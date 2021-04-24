@@ -1,5 +1,5 @@
 #
-# baresip configuration for Bakelite phone
+# baresip configuration -- example for linux
 #
 
 #------------------------------------------------------------------------------
@@ -21,9 +21,9 @@ call_hold_other_calls	yes
 
 # Audio
 #audio_path		/usr/share/baresip
-audio_player		alsa,plughw:1,0
+audio_player		alsa,mix_stream
 audio_source		alsa,plughw:1,0
-audio_alert		alsa,plughw:1,0
+audio_alert		alsa,mix_stream
 #ausrc_srate		48000
 #auplay_srate		48000
 #ausrc_channels		0
@@ -211,7 +211,7 @@ vumeter_stderr		no
 # Menu
 #redial_attempts	0 # Num or <inf>
 #redial_delay		5 # Delay in seconds
-ringback_disabled	yes
+ringback_disabled	no
 #statmode_default	off
 #menu_clean_number	no
 #sip_autoanswer_beep	yes

@@ -3,10 +3,12 @@
 namespace Bakelite;
 
 require_once 'Util.php';
+require_once __DIR__.'/../Async/Timer/TimerManager.php';
+require_once __DIR__.'/../Async/Timer/MaxRunTimer.php';
 
 use Monolog\Logger;
 use Async\Timer\TimerManager;
-use Async\Timer;
+use Async\Timer\MaxRunTimer;
 
 // Represents the ringer bell of the phone
 class Ringer {
@@ -96,7 +98,7 @@ class Ringer {
 		$this->setBellState($interval['state']);
 
 		// Set a timer to advance to the next state
-		$timer = new Timer($interval['time'], function() {
+		$timer = new MaxRunTimer($interval['time'], function() {
 			// Remove the current timer from the timer manager so we can add the new one
 			$this->timerManager->removeTimerByName($this->timerName);
 			// Advance the array pointer to either the next item or the first item if we hit the end

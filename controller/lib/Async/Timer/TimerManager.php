@@ -3,10 +3,12 @@
 namespace Async\Timer;
 
 require_once __DIR__.'/../Timer.php';
+require_once __DIR__.'/../Runnable.php';
 
 use Async\Timer;
+use Async\Runnable;
 
-class TimerManager {
+class TimerManager implements Runnable {
 	protected $timers;
 
 	public function addTimer(Timer $timer, string $name = NULL) {

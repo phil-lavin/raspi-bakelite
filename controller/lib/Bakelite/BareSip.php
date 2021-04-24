@@ -4,13 +4,15 @@ namespace Bakelite;
 
 require_once __DIR__.'/../Async/Timeout.php';
 require_once __DIR__.'/../Async/Timer.php';
+require_once __DIR__.'/../Async/Runnable.php';
 
 use Monolog\Logger;
 use Async\Timer\TimerManager;
 use Async\Timer;
 use Async\Timeout;
+use Async\Runnable;
 
-class BareSip {
+class BareSip implements Runnable {
 	protected $log;
 	protected $timerManager;
 	protected $port;
@@ -52,6 +54,9 @@ class BareSip {
 			if ( ! $this->ping()) {
 				$this->log->error('Ping to BareSIP failed. Trying to reconnect');
 				$this->reconnect();
+			}
+			else {
+				$this->log->debug("Pong received from BareSIP");
 			}
 		});
 

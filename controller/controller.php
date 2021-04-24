@@ -3,6 +3,7 @@
 require_once 'vendor/autoload.php';
 require_once 'lib/BareSip.php';
 require_once 'lib/TimerManager.php';
+require_once 'lib/Ringer.php';
 require_once 'lib/Phone.php';
 
 require_once 'config.php';
@@ -16,6 +17,9 @@ try {
 
 	// Set up connection to BareSIP
 	$bareSip = new \Bakelite\BareSip($log, $timerManager);
+
+	// Build a Ringer object
+	$ringer = new \Bakelite\Ringer($log, $timerManager, $ringerFile);
 
 	foreach (array_values($ringPattern) as $k=>$interval) {
 		// Even is 'on'

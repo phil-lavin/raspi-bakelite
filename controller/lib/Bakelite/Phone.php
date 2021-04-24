@@ -4,6 +4,10 @@ namespace Bakelite;
 
 require_once 'Util.php';
 
+use Monolog\Logger;
+use Async\Timer;
+use Async\Timer\TimerManager;
+
 class Phone {
 	protected $log;
 	protected $timerManager;
@@ -15,7 +19,7 @@ class Phone {
 
 	protected $offHook = false;
 
-	public function __construct(\Monolog\Logger $log, TimerManager $timerManager, Ringer $ringer, string $hanger, string $trigger, string $dialler) {
+	public function __construct(Logger $log, TimerManager $timerManager, Ringer $ringer, string $hanger, string $trigger, string $dialler) {
 		$this->log = $log;
 		$this->timerManager = $timerManager;
 

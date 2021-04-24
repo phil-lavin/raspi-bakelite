@@ -2,8 +2,13 @@
 
 namespace Bakelite;
 
-require_once 'Timeout.php';
-require_once 'Timer.php';
+require_once __DIR__.'/../Async/Timeout.php';
+require_once __DIR__.'/../Async/Timer.php';
+
+use Monolog\Logger;
+use Async\Timer\TimerManager;
+use Async\Timer;
+use Async\Timeout;
 
 class BareSip {
 	protected $log;
@@ -18,7 +23,7 @@ class BareSip {
 
 	protected $pingTimer;
 
-	public function __construct(\Monolog\Logger $logger, TimerManager $timerManager, int $port = 4444, string $ip = '127.0.0.1') {
+	public function __construct(Logger $logger, TimerManager $timerManager, int $port = 4444, string $ip = '127.0.0.1') {
 		$this->log = $logger;
 		$this->timerManager = $timerManager;
 		$this->port = $port;

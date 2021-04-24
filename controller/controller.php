@@ -1,25 +1,32 @@
 <?php
 
 require_once 'vendor/autoload.php';
-require_once 'lib/BareSip.php';
-require_once 'lib/TimerManager.php';
-require_once 'lib/Ringer.php';
-require_once 'lib/Phone.php';
+require_once 'lib/Bakelite/BareSip.php';
+require_once 'lib/Bakelite/Ringer.php';
+require_once 'lib/Bakelite/Phone.php';
+require_once 'lib/Async/Timer/TimerManager.php';
 
 require_once 'config.php';
 
-$log = new \Monolog\Logger('bakelite');
-$log->pushHandler(new \Monolog\Handler\StreamHandler($logFile, $logLevel));
+use \Monolog\Logger;
+use \Monolog\Handler\StreamHandler;
+use \Async\Timer\TimerManager;
+use \Bakelite\BareSip;
+use \Bakelite\Phone;
+use \Bakelite\Ringer;
+
+$log = new Logger('bakelite');
+$log->pushHandler(new StreamHandler($logFile, $logLevel));
 
 try {
 	// Set up a new TimerManager to be used for co-ordinating async tasks
-	$timerManager = new \Bakelite\TimerManager();
+	$timerManager = new TimerManager();
 
 	// Set up connection to BareSIP
-	$bareSip = new \Bakelite\BareSip($log, $timerManager);
+	$bareSip = new BareSip($log, $timerManager);
 
 	// Build a Ringer object
-	$ringer = new \Bakelite\Ringer($log, $timerManager, $ringerFile);
+	$ringer = new Ringer($log, $timerManager, $ringerFile);
 
 	foreach (array_values($ringPattern) as $k=>$interval) {
 		// Even is 'on'
@@ -31,7 +38,7 @@ try {
 	}
 
 	// Set up interface to the phone's hardware
-	$phone = new \Bakelite\Phone($log, $timerManager, $ringer, $hangerFile, $triggerFile, $diallerFile);
+	$phone = new Phone($log, $timerManager, $ringer, $hangerFile, $triggerFile, $diallerFile);
 
 	// Listen for and handle various BareSIP events
 	$bareSip->addEventListener('CALL_INCOMING', function($event) use ($bareSip, $phone) {

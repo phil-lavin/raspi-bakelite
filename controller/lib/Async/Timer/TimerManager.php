@@ -1,8 +1,10 @@
 <?php
 
-namespace Bakelite;
+namespace Async\Timer;
 
-require_once 'Timer.php';
+require_once __DIR__.'/../Timer.php';
+
+use Async\Timer;
 
 class TimerManager {
 	protected $timers;

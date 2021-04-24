@@ -1,6 +1,8 @@
 <?php
 
-namespace Bakelite;
+namespace Async;
+
+require_once 'Timer/Exceptions.php';
 
 class Timer {
 	protected $interval;
@@ -19,10 +21,10 @@ class Timer {
 
 	public function run() {
 		if ($this->maxRunsExceeded())
-			throw new MaxRunsExceededException();
+			throw new Timer\MaxRunsExceededException();
 
 		if (microtime(true) < $this->lastRun + $this->interval)
-			throw new NotTimeYetException();
+			throw new Timer\NotTimeYetException();
 
 		$this->lastRun = microtime(true);
 		$this->runCount++;
@@ -39,7 +41,3 @@ class Timer {
 		return $this->maxRuns >= 0 && $this->runCount >= $this->maxRuns;
 	}
 }
-
-class TimerNormalException extends \RuntimeException {}
-class NotTimeYetException extends TimerNormalException {}
-class MaxRunsExceededException extends TimerNormalException {}

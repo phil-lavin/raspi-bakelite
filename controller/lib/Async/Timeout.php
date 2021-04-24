@@ -1,6 +1,6 @@
 <?php
 
-namespace Bakelite;
+namespace Async;
 
 class Timeout {
 	protected $start;

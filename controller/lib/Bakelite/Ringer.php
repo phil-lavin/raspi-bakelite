@@ -4,6 +4,10 @@ namespace Bakelite;
 
 require_once 'Util.php';
 
+use Monolog\Logger;
+use Async\Timer\TimerManager;
+use Async\Timer;
+
 // Represents the ringer bell of the phone
 class Ringer {
 	protected $log;

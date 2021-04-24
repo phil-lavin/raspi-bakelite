@@ -29,7 +29,7 @@ register_shutdown_function(function() use ($log) {
 });
 
 // It seems that PHP doesn't trigger the shutdown function when you send SIGINT (ctrl+c)
-declare(ticks = 1);
+pcntl_async_signals(true);
 pcntl_signal(SIGINT, function() {
 	exit();
 });

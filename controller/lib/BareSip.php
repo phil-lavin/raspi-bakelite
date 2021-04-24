@@ -7,6 +7,7 @@ require_once 'Timer.php';
 
 class BareSip {
 	protected $log;
+	protected $timerManager;
 	protected $port;
 	protected $ip;
 
@@ -17,8 +18,9 @@ class BareSip {
 
 	protected $pingTimer;
 
-	public function __construct(\Monolog\Logger $logger, int $port = 4444, string $ip = '127.0.0.1') {
+	public function __construct(\Monolog\Logger $logger, TimerManager $timerManager, int $port = 4444, string $ip = '127.0.0.1') {
 		$this->log = $logger;
+		$this->timerManager = $timerManager;
 		$this->port = $port;
 		$this->ip = $ip;
 
@@ -47,6 +49,9 @@ class BareSip {
 				$this->reconnect();
 			}
 		});
+
+		// Add pingTimer to the TimerManager
+		$this->timerManager->addTimer($this->pingTimer);
 
 		// Bind to EXIT event and try to reconnect
 		$this->addEventListener('EXIT', function() {
@@ -205,14 +210,16 @@ class BareSip {
 		return $gotResponse;
 	}
 
-	// Poll for events
+	// Poll for messages
 	public function run(int $timeout = 0) {
 		$to = new Timeout($timeout);
 
 		while (1) {
+			// Read a message and fire callback(s)
 			$this->readAndFire($timeout / 3);
 
-			$this->pingTimer->run();
+			// Try to run any timers which are due
+			$this->timerManager->run();
 
 			// Check if we've hit the configured timeout
 			if ($to->check()) return;

@@ -2,8 +2,11 @@
 
 namespace Bakelite;
 
+require_once 'Util.php';
+
 class Phone {
 	protected $log;
+	protected $timerManager;
 
 	protected $ringer;
 	protected $hanger;
@@ -12,10 +15,11 @@ class Phone {
 
 	protected $offHook = false;
 
-	public function __construct(\Monolog\Logger $log, string $ringer, string $hanger, string $trigger, string $dialler) {
+	public function __construct(\Monolog\Logger $log, TimerManager $timerManager, Ringer $ringer, string $hanger, string $trigger, string $dialler) {
 		$this->log = $log;
+		$this->timerManager = $timerManager;
 
-		$this->ringer = $this->openHandle($ringer, 'w');
+		$this->ringer = $ringer;
 		$this->hanger = $this->openHandle($hanger, 'rb');
 		$this->trigger = $this->openHandle($trigger, 'rb');
 		$this->dialler = $this->openHandle($dialler, 'rb');
@@ -23,15 +27,7 @@ class Phone {
 
 	// Opens a file handle to a given file, doing some sanity checks and turning them into exceptions
 	protected function openHandle(string $file, string $mode) {
-		if ( ! file_exists($file)) {
-			throw new \ErrorException("Cannot open {$file}: File does not exist");
-		}
-
-		if ( ! ($handle = fopen($file, $mode))) {
-			throw new \ErrorException("Cannot open {$file}");
-		}
-
-		return $handle;
+		return Util::openHandle($file, $mode);
 	}
 
 	// Reads and parses an event from /dev/input/* streams

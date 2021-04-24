@@ -14,11 +14,14 @@ class Timer {
 	}
 
 	public function run() {
-		if (microtime(true) < $this->lastRun + $this->interval) return;
+		if (microtime(true) < $this->lastRun + $this->interval)
+			throw new NotTimeYetException();
 
 		$this->lastRun = microtime(true);
 
 		$callback = $this->callback;
-		$callback();
+		return $callback();
 	}
 }
+
+class NotTimeYetException extends \RuntimeException {}

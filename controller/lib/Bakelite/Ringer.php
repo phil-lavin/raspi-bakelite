@@ -85,7 +85,7 @@ class Ringer {
 		$state = (string)(int)$state;
 
 		$this->log->debug("Setting bell state to $state");
-		fwrite($this->ringer, (string)(int)$state, 1);
+		fwrite($this->ringer, $state, 1);
 	}
 
 	protected function ringNext() {

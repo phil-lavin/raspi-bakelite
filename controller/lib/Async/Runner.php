@@ -11,6 +11,7 @@ class Runner implements Runnable {
 
 	public function addRunnable(Runnable $runnable) {
 		$this->runnables[] = $runnable;
+		return $this;
 	}
 
 	public function removeRunnable(Runnable $runnable) {
@@ -19,6 +20,8 @@ class Runner implements Runnable {
 				unset($this->runnables[$k]);
 			}
 		}
+
+		return $this;
 	}
 
 	public function run() {

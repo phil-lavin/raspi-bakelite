@@ -2,16 +2,18 @@
 
 namespace Bakelite;
 
-require_once __DIR__.'/../Async/Timeout.php';
 require_once __DIR__.'/../Async/Timer.php';
 require_once __DIR__.'/../Async/Runnable.php';
 require_once __DIR__.'/../Async/Eventer.php';
+require_once __DIR__.'/../Async/Runner/CallbackRunner.php';
+require_once __DIR__.'/../Async/Runner/TimedRunner.php';
 
 use Monolog\Logger;
 use Async\Timer\TimerManager;
 use Async\Timer;
-use Async\Timeout;
 use Async\Runnable;
+use Async\Runner\CallbackRunner;
+use Async\Runner\TimedRunner;
 
 class BareSip implements Runnable {
 	use \Async\Eventer;
@@ -104,20 +106,15 @@ class BareSip implements Runnable {
 	}
 
 	// Reads a complete JSON message from the socket and returns it as an array
-	protected function readMessage(int $timeout) {
-		$to = new Timeout($timeout);
-
+	protected function readMessage() {
 		if ( ! $this->sock) $this->connect();
 
 		// Read the message length, up to a :
 		$len = '';
 
 		while (($chr = socket_read($this->sock, 1)) != ':') {
-			if ($chr === false) usleep($timeout / 3);
-			else $len .= $chr;
-
-			// Check if we've hit the configured timeout and we're not part way through reading a number
-			if (!$len && $to->check()) return;
+			if ($chr === false && !$len) return;
+			elseif ($chr !== false) $len .= $chr;
 		}
 
 		if (!is_numeric($len)) throw new \RuntimeException("The socket message didn't start with a numeric length ({$len})");
@@ -145,9 +142,9 @@ class BareSip implements Runnable {
 	}
 
 	// Reads a JSON message from the socket and fires the appropriate callback(s)
-	protected function readAndFire(int $timeout) {
+	protected function readAndFire() {
 		try {
-			$message = $this->readMessage($timeout);
+			$message = $this->readMessage();
 		}
 		catch (\RuntimeException $e) {
 			$this->log->error("Error reading message from socket: {$e->getMessage()}");
@@ -188,18 +185,18 @@ class BareSip implements Runnable {
 
 		$gotResponse = false;
 
+		// Bind a response listener to listen for the response to the 'ping'
 		$this->addResponseListener(function($response) use (&$gotResponse) {
 			if (strpos($response, 'main loop') !== false)
 				$gotResponse = true;
 		});
 
-		// Read and fire up to 20 times before the timeout in case there's events waiting on the socket
-		$to = new Timeout($timeout);
-		while ( ! $gotResponse) {
-			$this->readAndFire($timeout / 20);
-
-			if ($to->check()) break;
-		}
+		// Use a TimedRunner to wait for the response for $timeout uSeconds
+		$cR = (new CallbackRunner())->addCallback(function() use (&$gotResponse) {
+			if ( ! $gotResponse) $this->readAndFire();
+		});
+		$tR = (new TimedRunner($timeout))->addRunnable($cR);
+		$tR->run();
 
 		return $gotResponse;
 	}
@@ -207,9 +204,6 @@ class BareSip implements Runnable {
 	// Poll for messages
 	public function run() {
 		// Read a message and fire callback(s)
-		$this->readAndFire(5000);
-
-		// Try to run any timers which are due
-		$this->timerManager->run();
+		$this->readAndFire();
 	}
 }

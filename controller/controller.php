@@ -68,6 +68,10 @@ try {
 		$phone->ring();
 	});
 
+	$bareSip->addEventListener('CALL_CLOSED', function ($event) use ($bareSip, $phone) {
+		$phone->stopRinging();
+	});
+
 	// Listen for and handle various Phone events
 	$phone->addEventListener('HANG', function($event) use ($bareSip, $phone) {
 		// Picked up

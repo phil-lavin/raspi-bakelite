@@ -173,6 +173,11 @@ class BareSip implements Runnable {
 		@socket_write($this->sock, $dataStr);
 	}
 
+	// Creates a new outbound call
+	public function call(string $number) {
+		$this->sendCommand("dial {$number}");
+	}
+
 	// Checks if BareSIP is alive by sending a ping type message
 	protected function ping($timeout = 250000) {
 		$this->sendCommand('main'); // Closest I could find to a 'ping'

@@ -3,28 +3,29 @@
 namespace Bakelite;
 
 use Monolog\Logger;
+use Async\Runnable;
 use Async\Timer;
 use Async\Timer\TimerManager;
+use EV\EventLoop;
 
-class Phone {
+class Phone implements Runnable {
 	protected $log;
 	protected $timerManager;
 
 	protected $ringer;
-	protected $hanger;
-	protected $trigger;
-	protected $dialler;
+	protected $eventLoop;
 
 	protected $offHook = false;
+	protected $dialling = false;
 
-	public function __construct(Logger $log, TimerManager $timerManager, Ringer $ringer, string $hanger, string $trigger, string $dialler) {
+	public function __construct(Logger $log, TimerManager $timerManager, Ringer $ringer, EventLoop $eventLoop) {
 		$this->log = $log;
 		$this->timerManager = $timerManager;
 
 		$this->ringer = $ringer;
-		$this->hanger = $this->openHandle($hanger, 'rb');
-		$this->trigger = $this->openHandle($trigger, 'rb');
-		$this->dialler = $this->openHandle($dialler, 'rb');
+		$this->eventLoop = $eventLoop;
+
+		$this->registerInputEvents();
 	}
 
 	public function __destruct() {
@@ -32,38 +33,35 @@ class Phone {
 		$this->stopRinging();
 	}
 
-	// Opens a file handle to a given file, doing some sanity checks and turning them into exceptions
-	protected function openHandle(string $file, string $mode) {
-		return Util::openHandle($file, $mode);
-	}
+	// Registers internal handlers for the input events so we can update our own state
+	protected function registerInputEvents() {
+		$this->getEventLoop()->addEventListener('HANG', function($event) {
+			$this->offHook = (bool)$event['value'];
+		});
 
-	// Reads and parses an event from /dev/input/* streams
-	protected function readEvent($handle) {
-		$read = [$handle];
-		$write = [];
-		$except = [];
-
-		if (stream_select($read, $write, $except, 0, 0)) {
-			$data = fread($handle, 32);
-			return unpack('LtimeSec/LtimeUSec/Stype/Scode/Lvalue', $data);
-		}
-
-		return;
+		$this->getEventLoop()->addEventListener('TRIG', function($event) {
+			$this->dialling = (bool)$event['value'];
+		});
 	}
 
 	// Returns true if the handset is currently off the hook
 	public function isOffHook() {
-		// Read events from the input, if any exist, to sync the current state
-		while ($event = $this->readEvent($this->hanger)) {
-			$this->offHook = (bool)$event['value'];
-		}
-
 		return $this->offHook;
+	}
+
+	// Returns true if the handset is currently dialling a digit (i.e. the rotary encoder is not at its resting point)
+	public function isDialling() {
+		return $this->dialling;
 	}
 
 	// Gets the Ringer instance of this Phone
 	public function getRinger() {
 		return $this->ringer;
+	}
+
+	// Gets the EventLoop instance of this Phone
+	public function getEventLoop() {
+		return $this->eventLoop;
 	}
 
 	// Rings the ringer
@@ -74,5 +72,10 @@ class Phone {
 	// Stops the ringer ringing
 	public function stopRinging() {
 		return $this->getRinger()->stop();
+	}
+
+	// Triggers the event loop
+	public function run() {
+		return $this->getEventLoop()->run();
 	}
 }

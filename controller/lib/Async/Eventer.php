@@ -13,9 +13,7 @@ trait Eventer {
 	}
 
 	// Fires event callbacks
-	protected function fireEvents(array $event) {
-		$type = $event['type'];
-
+	protected function fireEvents(string $type, array $event) {
 		if (isset($this->eventCallbacks[$type])) {
 			foreach ($this->eventCallbacks[$type] as $callback) {
 				$callback($event);

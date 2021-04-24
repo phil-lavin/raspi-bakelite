@@ -149,7 +149,7 @@ class BareSip implements Runnable {
 
 			if (isset($message['event']) && $message['event'] == 'true') {
 				$this->log->info("Got event of type {$message['type']}");
-				$this->fireEvents($message);
+				$this->fireEvents($message['type'], $message);
 			}
 			elseif (isset($message['response']) && $message['response'] == 'true') {
 				$this->log->debug("Got response: {$message['data']}");

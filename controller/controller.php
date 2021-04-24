@@ -12,6 +12,7 @@ use \Bakelite\Phone;
 use \Bakelite\Ringer;
 use \Async\Runner\InfinateRunner;
 use \Async\Runner\TimedRunner;
+use \EV\EventLoop;
 
 // Monolog Logger
 $log = new Logger('bakelite');
@@ -52,7 +53,12 @@ try {
 	}
 
 	// Set up interface to the phone's hardware
-	$phone = new Phone($log, $timerManager, $ringer, $hangerFile, $triggerFile, $diallerFile);
+	$eventLoop = (new EventLoop($log))
+		->addEventInput('HANG', $hangerFile)
+		->addEventInput('TRIG', $triggerFile)
+		->addEventInput('DIAL', $diallerFile);
+
+	$phone = new Phone($log, $timerManager, $ringer, $eventLoop);
 
 	// Listen for and handle various BareSIP events
 	$bareSip->addEventListener('CALL_INCOMING', function($event) use ($bareSip, $phone) {
@@ -73,6 +79,7 @@ try {
 	$eventLoop = new InfinateRunner(1);
 	$eventLoop->addRunnable($bareSipRunner);
 	$eventLoop->addRunnable($timerManager);
+	$eventLoop->addRunnable($phone);
 
 	// Run the event loop
 	$eventLoop->run();

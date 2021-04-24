@@ -88,6 +88,9 @@ class Ringer {
 	}
 
 	protected function ringNext() {
+		// Catch a race condition where runningIntervals has been cleared when this runs
+		if ( ! $this->runningIntervals) return;
+
 		// Get the interval that we need to run now
 		$interval = current($this->runningIntervals);
 
@@ -96,6 +99,9 @@ class Ringer {
 
 		// Set a timer to advance to the next state
 		$timer = new MaxRunTimer($interval['time'], function() {
+			// Catch a race condition where runningIntervals has been cleared when this runs
+			if ( ! $this->runningIntervals) return;
+
 			// Remove the current timer from the timer manager so we can add the new one
 			$this->timerManager->removeTimerByName($this->timerName);
 			// Advance the array pointer to either the next item or the first item if we hit the end

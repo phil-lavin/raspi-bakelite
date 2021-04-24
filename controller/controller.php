@@ -96,10 +96,16 @@ try {
 	$eventLoop->addRunnable($phone);
 
 	// Run the event loop
-	$eventLoop->run();
+	try {
+		$eventLoop->run();
+	}
+	catch (\RuntimeException $e) {
+		$log->error($e->getMessage());
+	}
 }
 catch (\RuntimeException $e) {
 	$log->error($e->getMessage());
+	die(2);
 }
 catch (\ErrorException $e) {
 	$log->error($e->getMessage());

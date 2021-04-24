@@ -2,9 +2,6 @@
 
 namespace Async\Timer;
 
-require_once __DIR__.'/../Timer.php';
-require_once __DIR__.'/../Runnable.php';
-
 use Async\Timer;
 use Async\Runnable;
 

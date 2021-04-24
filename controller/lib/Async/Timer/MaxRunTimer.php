@@ -2,9 +2,6 @@
 
 namespace Async\Timer;
 
-require_once __DIR__.'/../Timer.php';
-require_once __DIR__.'/../Timer/Exceptions.php';
-
 use \Async\Timer;
 
 class MaxRunTimer extends Timer {

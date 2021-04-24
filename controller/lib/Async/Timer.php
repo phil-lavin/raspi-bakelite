@@ -2,9 +2,6 @@
 
 namespace Async;
 
-require_once 'Timer/Exceptions.php';
-require_once 'Runnable.php';
-
 class Timer implements Runnable {
 	protected $interval;
 	protected $lastRun;

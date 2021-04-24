@@ -2,8 +2,6 @@
 
 namespace Async\Runner;
 
-require_once __DIR__.'/../Runnable.php';
-
 use Async\Runnable;
 
 class CallbackRunner implements Runnable {

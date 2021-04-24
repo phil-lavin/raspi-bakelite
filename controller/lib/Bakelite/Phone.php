@@ -2,8 +2,6 @@
 
 namespace Bakelite;
 
-require_once 'Util.php';
-
 use Monolog\Logger;
 use Async\Timer;
 use Async\Timer\TimerManager;

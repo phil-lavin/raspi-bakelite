@@ -2,8 +2,6 @@
 
 namespace Async;
 
-require_once 'Runnable.php';
-
 use Async\Runnable;
 
 class Runner implements Runnable {

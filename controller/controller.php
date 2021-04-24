@@ -1,12 +1,6 @@
 <?php
 
 require_once 'vendor/autoload.php';
-require_once 'lib/Bakelite/BareSip.php';
-require_once 'lib/Bakelite/Ringer.php';
-require_once 'lib/Bakelite/Phone.php';
-require_once 'lib/Async/Timer/TimerManager.php';
-require_once 'lib/Async/Runner/InfinateRunner.php';
-require_once 'lib/Async/Runner/TimedRunner.php';
 
 require_once 'config.php';
 

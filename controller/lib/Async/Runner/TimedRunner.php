@@ -2,9 +2,6 @@
 
 namespace Async\Runner;
 
-require_once __DIR__.'/../Runner.php';
-require_once __DIR__.'/../Timeout.php';
-
 use Async\Runner;
 use Async\Timeout;
 

@@ -2,10 +2,6 @@
 
 namespace Bakelite;
 
-require_once 'Util.php';
-require_once __DIR__.'/../Async/Timer/TimerManager.php';
-require_once __DIR__.'/../Async/Timer/MaxRunTimer.php';
-
 use Monolog\Logger;
 use Async\Timer\TimerManager;
 use Async\Timer\MaxRunTimer;

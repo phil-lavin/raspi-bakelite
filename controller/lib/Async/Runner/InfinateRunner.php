@@ -2,8 +2,6 @@
 
 namespace Async\Runner;
 
-require_once __DIR__.'/../Runner.php';
-
 use Async\Runner;
 
 class InfinateRunner extends Runner {

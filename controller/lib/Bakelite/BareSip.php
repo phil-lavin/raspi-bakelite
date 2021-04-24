@@ -2,12 +2,6 @@
 
 namespace Bakelite;
 
-require_once __DIR__.'/../Async/Timer.php';
-require_once __DIR__.'/../Async/Runnable.php';
-require_once __DIR__.'/../Async/Eventer.php';
-require_once __DIR__.'/../Async/Runner/CallbackRunner.php';
-require_once __DIR__.'/../Async/Runner/TimedRunner.php';
-
 use Monolog\Logger;
 use Async\Timer\TimerManager;
 use Async\Timer;

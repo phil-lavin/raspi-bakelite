@@ -5,6 +5,8 @@ require_once 'lib/Bakelite/BareSip.php';
 require_once 'lib/Bakelite/Ringer.php';
 require_once 'lib/Bakelite/Phone.php';
 require_once 'lib/Async/Timer/TimerManager.php';
+require_once 'lib/Async/Runner/InfinateRunner.php';
+require_once 'lib/Async/Runner/TimedRunner.php';
 
 require_once 'config.php';
 
@@ -14,6 +16,8 @@ use \Async\Timer\TimerManager;
 use \Bakelite\BareSip;
 use \Bakelite\Phone;
 use \Bakelite\Ringer;
+use \Async\Runner\InfinateRunner;
+use \Async\Runner\TimedRunner;
 
 // Monolog Logger
 $log = new Logger('bakelite');
@@ -67,8 +71,20 @@ try {
 		$phone->ring();
 	});
 
+	// Bare sip timeout runner
+	$bareSipRunner = new TimedRunner(50000, 5000);
+	$bareSipRunner->addRunnable($bareSip);
+
+	// Event loop runner
+	$eventLoop = new InfinateRunner(1);
+	$eventLoop->addRunnable($bareSipRunner);
+	$eventLoop->addRunnable($timerManager);
+
+	// Run the event loop
+	$eventLoop->run();
+
 	// Event loop
-	while (1) {
+	/*while (1) {
 		// Poll for messages from BareSIP
 		$bareSip->run(50000); // 0.05 second timeout
 
@@ -80,7 +96,7 @@ try {
 			var_dump('Phone is off the hook');
 			sleep(1);
 		}
-	}
+	}*/
 }
 catch (\RuntimeException $e) {
 	$log->error($e->getMessage());

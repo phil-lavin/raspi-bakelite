@@ -12,6 +12,6 @@ class Timeout {
 	}
 
 	public function check() {
-		return $this->timeout && microtime(true) >= $this->start + $this->timeout;
+		return microtime(true) >= $this->start + $this->timeout;
 	}
 }

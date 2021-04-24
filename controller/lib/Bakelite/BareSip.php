@@ -5,6 +5,7 @@ namespace Bakelite;
 require_once __DIR__.'/../Async/Timeout.php';
 require_once __DIR__.'/../Async/Timer.php';
 require_once __DIR__.'/../Async/Runnable.php';
+require_once __DIR__.'/../Async/Eventer.php';
 
 use Monolog\Logger;
 use Async\Timer\TimerManager;
@@ -13,6 +14,8 @@ use Async\Timeout;
 use Async\Runnable;
 
 class BareSip implements Runnable {
+	use \Async\Eventer;
+
 	protected $log;
 	protected $timerManager;
 	protected $port;
@@ -20,7 +23,6 @@ class BareSip implements Runnable {
 
 	protected $sock;
 
-	protected $eventCallbacks = [];
 	protected $responseCallbacks;
 
 	protected $pingTimer;
@@ -96,13 +98,6 @@ class BareSip implements Runnable {
 		}
 	}
 
-	// Adds callbacks for particular types of events. These are persistent
-	public function addEventListener(string $type, callable $callback) {
-		$type = strtoupper($type);
-
-		$this->eventCallbacks[$type][] = $callback;
-	}
-
 	// Adds callbacks to the stack for responses. The callback on the top of the stack is popped (i.e. removed) and used once
 	public function addResponseListener(callable $callback) {
 		$this->responseCallbacks->push($callback);
@@ -135,17 +130,6 @@ class BareSip implements Runnable {
 		if (socket_read($this->sock, 1) !== ',') throw new \RuntimeException("Event wasn't followed with a , separator");
 
 		return $parsed;
-	}
-
-	// Fires event callbacks
-	protected function fireEvents(array $event) {
-		$type = $event['type'];
-
-		if (isset($this->eventCallbacks[$type])) {
-			foreach ($this->eventCallbacks[$type] as $callback) {
-				$callback($event);
-			}
-		}
 	}
 
 	// Fires response callback
@@ -221,18 +205,11 @@ class BareSip implements Runnable {
 	}
 
 	// Poll for messages
-	public function run(int $timeout = 0) {
-		$to = new Timeout($timeout);
+	public function run() {
+		// Read a message and fire callback(s)
+		$this->readAndFire(5000);
 
-		while (1) {
-			// Read a message and fire callback(s)
-			$this->readAndFire($timeout / 3);
-
-			// Try to run any timers which are due
-			$this->timerManager->run();
-
-			// Check if we've hit the configured timeout
-			if ($to->check()) return;
-		}
+		// Try to run any timers which are due
+		$this->timerManager->run();
 	}
 }

@@ -24,7 +24,7 @@ class TimerManager implements Runnable {
 
 	public function removeTimer(Timer $timer) {
 		foreach ($this->timers as $k=>$t) {
-			if ($t == $timer) {
+			if ($t === $timer) {
 				unset($this->timers[$k]);
 				return true;
 			}

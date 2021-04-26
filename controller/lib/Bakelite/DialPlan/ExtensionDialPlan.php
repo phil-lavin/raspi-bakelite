@@ -2,6 +2,7 @@
 
 namespace Bakelite\DialPlan;
 
+use Monolog\Logger;
 use Bakelite\DialPlan;
 
 class ExtensionDialPlan extends DialPlan {
@@ -32,5 +33,16 @@ class ExtensionDialPlan extends DialPlan {
 
 	protected function timeout() {
 		return $this->timeout;
+	}
+
+	// Creates an instance of this object from an array of extension ranges
+	public static function createFromRangeArray(Logger $log, DialPlan $decorator, array $ranges) {
+		$dialPlan = new static($log, $decorator);
+
+		foreach ($ranges as $range) {
+			$dialPlan->addExtensionRange(...$range);
+		}
+
+		return $dialPlan;
 	}
 }

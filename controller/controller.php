@@ -59,11 +59,7 @@ try {
 	$phone = new Phone($log, $timerManager, $ringer, $eventLoop);
 
 	// Set up the dial plans - we want a UK Dial Plan with Extensions support
-	$dialPlan = (new ExtensionDialPlan($log, new UKDialPlan($log)));
-
-	foreach ($extensions as $extension) {
-		$dialPlan->addExtensionRange(...$extension);
-	}
+	$dialPlan = ExtensionDialPlan::createFromRangeArray($log, new UKDialPlan($log), $extensions);
 
 	// This object records the number currently being dialled
 	$dialString = new DialString($log, $timerManager, $dialPlan);

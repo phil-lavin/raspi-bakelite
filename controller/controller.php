@@ -50,12 +50,12 @@ try {
 	$ringer = Ringer::createFromPatternArray($log, $timerManager, $ringerFile, $ringPattern);
 
 	// Set up interface to the phone's hardware
-	$eventLoop = (new EventLoop($log))
+	$phoneEventLoop = (new EventLoop($log))
 		->addEventInput('HANG', $hangerFile)
 		->addEventInput('TRIG', $triggerFile)
 		->addEventInput('DIAL', $diallerFile);
 
-	$phone = new Phone($log, $timerManager, $ringer, $eventLoop);
+	$phone = new Phone($log, $timerManager, $ringer, $phoneEventLoop);
 
 	// Set up the dial plans - we want a UK Dial Plan with Extensions support
 	$dialPlan = ExtensionDialPlan::createFromRangeArray($log, new UKDialPlan($log), $extensions);

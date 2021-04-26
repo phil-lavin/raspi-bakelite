@@ -91,23 +91,20 @@ try {
 	});
 
 	// Listen for and handle various Phone events
-	$phone->addEventListener('HANG', function($event) use ($bareSip, $phone, $dialString) {
-		// Picked up
-		if ($event['value']) {
-			// We are currently ringing, thus this is us answering the call
-			if ($phone->isRinging()) {
-				$phone->stopRinging();
-				$bareSip->sendCommand('accept');
-			}
+	$phone->addEventListener('RECEIVER_UP', function($event) use ($bareSip, $phone, $dialString) {
+		// We are currently ringing, thus this is us answering the call
+		if ($phone->isRinging()) {
+			$phone->stopRinging();
+			$bareSip->sendCommand('accept');
 		}
-		// Hung up
-		else {
-			// Assume we're on a call and send hangup. We might not be, but it doesn't matter
-			$bareSip->sendCommand('hangup');
+	});
 
-			// Clear the dial string when we hang up on the off chance we're in the middle of dialling
-			$dialString->reset();
-		}
+	$phone->addEventListener('RECEIVER_DOWN', function($event) use ($bareSip, $phone, $dialString) {
+		// Assume we're on a call and send hangup. We might not be, but it doesn't matter
+		$bareSip->sendCommand('hangup');
+
+		// Clear the dial string when we hang up on the off chance we're in the middle of dialling
+		$dialString->reset();
 	});
 
 	$phone->addEventListener('TRIG', function ($event) use ($bareSip, $phone, $digit, $dialString) {

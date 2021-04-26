@@ -6,9 +6,12 @@ use Monolog\Logger;
 use Async\Runnable;
 use Async\Timer;
 use Async\Timer\TimerManager;
+use Async\EventerInterface;
 use EV\EventLoop;
 
-class Phone implements Runnable {
+class Phone implements EventerInterface, Runnable {
+	use \Async\Eventer;
+
 	protected $log;
 	protected $timerManager;
 
@@ -33,14 +36,26 @@ class Phone implements Runnable {
 		$this->stopRinging();
 	}
 
-	// Registers internal handlers for the input events so we can update our own state
+	// Registers internal handlers for the input events so we can update our own state and trigger them to our own listeners
 	protected function registerInputEvents() {
-		$this->addEventListener('HANG', function($event) {
+		$this->getEventLoop()->addEventListener('HANG', function($event) {
+			// Update our state
 			$this->offHook = (bool)$event['value'];
+
+			// Fire event to our own listeners
+			$this->fireEvents('HANG', $event);
+
+			// Trigger specific events for receiver up and down states
+			$eventName = $this->isOffHook() ? 'RECEIVER_UP' : 'RECEIVER_DOWN';
+			$this->fireEvents($eventName, $event);
 		});
 
-		$this->addEventListener('TRIG', function($event) {
+		$this->getEventLoop()->addEventListener('TRIG', function($event) {
+			// Update our state
 			$this->dialling = (bool)$event['value'];
+
+			// Fire event to our own listeners
+			$this->fireEvents('TRIG', $event);
 		});
 	}
 
@@ -77,13 +92,6 @@ class Phone implements Runnable {
 	// Stops the ringer ringing
 	public function stopRinging() {
 		return $this->getRinger()->stop();
-	}
-
-	// Proxy method to add an event listener on the event loop
-	public function addEventListener(string $type, callable $callback) {
-		$this->getEventLoop()->addEventListener($type, $callback);
-
-		return $this;
 	}
 
 	// Proxy method to run() on the event loop

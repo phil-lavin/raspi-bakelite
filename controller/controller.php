@@ -9,7 +9,6 @@ use Monolog\Handler\StreamHandler;
 
 use Async\Timer\TimerManager;
 use Async\Runner\InfinateRunner;
-use Async\Runner\TimedRunner;
 
 use EV\EventLoop;
 
@@ -119,9 +118,9 @@ try {
 }
 catch (\RuntimeException $e) {
 	$log->error($e->getMessage());
-	die(2);
+	die(1);
 }
 catch (\ErrorException $e) {
 	$log->error($e->getMessage());
-	die(1);
+	die(2);
 }

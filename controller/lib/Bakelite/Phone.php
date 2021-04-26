@@ -42,9 +42,6 @@ class Phone implements EventerInterface, Runnable {
 			// Update our state
 			$this->offHook = (bool)$event['value'];
 
-			// Fire event to our own listeners
-			$this->fireEvents('HANG', $event);
-
 			// Trigger specific events for receiver up and down states
 			$eventName = $this->isOffHook() ? 'RECEIVER_UP' : 'RECEIVER_DOWN';
 			$this->fireEvents($eventName, $event);
@@ -53,9 +50,12 @@ class Phone implements EventerInterface, Runnable {
 		$this->getEventLoop()->addEventListener('TRIG', function($event) {
 			// Update our state
 			$this->dialling = (bool)$event['value'];
+		});
 
+		// Proxy registration for all EventLoop events to pass them back up to our own listeners
+		$this->getEventLoop()->addEventListener(true, function ($event, $type) {
 			// Fire event to our own listeners
-			$this->fireEvents('TRIG', $event);
+			$this->fireEvents($type, $event);
 		});
 	}
 

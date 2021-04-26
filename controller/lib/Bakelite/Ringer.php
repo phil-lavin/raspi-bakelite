@@ -19,7 +19,7 @@ class Ringer {
 
 	protected $timerName = 'currentBellInterval';
 
-	public function __construct(\Monolog\Logger $logger, TimerManager $timerManager, $ringerFile) {
+	public function __construct(\Monolog\Logger $logger, TimerManager $timerManager, string $ringerFile) {
 		$this->log = $logger;
 		$this->timerManager = $timerManager;
 		$this->ringer = $this->openHandle($ringerFile, 'w');
@@ -113,5 +113,19 @@ class Ringer {
 
 		// Add to the timer manager
 		$this->timerManager->addTimer($timer, $this->timerName);
+	}
+
+	// Creates an instance of Ringer from an array of on/off interval times
+	public static function createFromPatternArray(Logger $log, TimerManager $timeManager, string $ringerFile, array $ringPattern) {
+		$ringer = new static($log, $timeManager, $ringerFile);
+
+		foreach (array_values($ringPattern) as $k=>$interval) {
+			// Odd is 'off'
+			if ($k % 2) $ringer->addOffInterval($interval);
+			// Even is 'on'
+			else $ringer->addOnInterval($interval);
+		}
+
+		return $ringer;
 	}
 }

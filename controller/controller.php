@@ -48,14 +48,7 @@ try {
 	$bareSip = new BareSip($log, $timerManager);
 
 	// Build a Ringer object from config
-	$ringer = new Ringer($log, $timerManager, $ringerFile);
-
-	foreach (array_values($ringPattern) as $k=>$interval) {
-		// Odd is 'off'
-		if ($k % 2) $ringer->addOffInterval($interval);
-		// Even is 'on'
-		else $ringer->addOnInterval($interval);
-	}
+	$ringer = Ringer::createFromPatternArray($log, $timerManager, $ringerFile, $ringPattern);
 
 	// Set up interface to the phone's hardware
 	$eventLoop = (new EventLoop($log))

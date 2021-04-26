@@ -121,12 +121,6 @@ try {
 		// End of a digit - get it and add it to the string
 		else {
 			$dialString->addDigit($digit->stop());
-
-			// If we have a complete number, dial it
-			if ($dialString->isComplete()) {
-				$bareSip->call($dialString);
-				$dialString->reset();
-			}
 		}
 	});
 
@@ -141,11 +135,18 @@ try {
 		$digit->pulse();
 	});
 
+	// Listen for and handle DialString events
+	$dialString->addEventListener('COMPLETE', function ($event) use ($dialString, $bareSip) {
+		// Dial the number when the DialString is complete
+		$bareSip->call($dialString);
+	});
+
 	// Event loop runner
 	$eventLoop = new InfinateRunner(500);
 	$eventLoop->addRunnable($bareSip);
 	$eventLoop->addRunnable($timerManager);
 	$eventLoop->addRunnable($phone);
+	$eventLoop->addRunnable($dialString);
 
 	// Run the event loop
 	try {

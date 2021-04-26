@@ -6,10 +6,11 @@ use Monolog\Logger;
 use Async\Timer;
 use Async\Timer\TimerManager;
 use Async\EventerInterface;
+use Async\Runnable;
 use Bakelite\DialPlan;
 
 // Represents a dial string currently being constructed
-class DialString implements EventerInterface {
+class DialString implements Runnable, EventerInterface {
 	use \Async\Eventer;
 
 	protected $log;
@@ -64,5 +65,15 @@ class DialString implements EventerInterface {
 	// Check the Dial Plan for completeness
 	public function isComplete() {
 		return $this->getDialPlan()->check($this->dialString);
+	}
+
+	// Checks the Dial Plan for completeness and throws an event if it's complete
+	public function run() {
+		if ( ! $this->isComplete()) return;
+
+		$this->fireEvents('COMPLETE', ['dialString'=>$this->getDialString()]);
+
+		// Reset myself after firing the events
+		$this->reset();
 	}
 }

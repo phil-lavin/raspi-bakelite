@@ -6,13 +6,16 @@ require_once 'config.php';
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+
 use Async\Timer\TimerManager;
+use Async\Runner\InfinateRunner;
+use Async\Runner\TimedRunner;
+
+use EV\EventLoop;
+
 use Bakelite\BareSip;
 use Bakelite\Phone;
 use Bakelite\Ringer;
-use Async\Runner\InfinateRunner;
-use Async\Runner\TimedRunner;
-use EV\EventLoop;
 use Bakelite\DialPlan\UKDialPlan;
 use Bakelite\DialPlan\ExtensionDialPlan;
 use Bakelite\DialString;
@@ -48,12 +51,10 @@ try {
 	$ringer = new Ringer($log, $timerManager, $ringerFile);
 
 	foreach (array_values($ringPattern) as $k=>$interval) {
-		// Even is 'on'
-		if ($k % 2 == 0)
-			$ringer->addOnInterval($interval);
 		// Odd is 'off'
-		else
-			$ringer->addOffInterval($interval);
+		if ($k % 2) $ringer->addOffInterval($interval);
+		// Even is 'on'
+		else $ringer->addOnInterval($interval);
 	}
 
 	// Set up interface to the phone's hardware
@@ -101,7 +102,7 @@ try {
 		}
 		// Hung up
 		else {
-			// Assume we're on a call and send hangup. We might not be but it doesn't matter
+			// Assume we're on a call and send hangup. We might not be, but it doesn't matter
 			$bareSip->sendCommand('hangup');
 
 			// Clear the dial string when we hang up on the off chance we're in the middle of dialling

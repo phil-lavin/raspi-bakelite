@@ -19,7 +19,7 @@ use Bakelite\Ringer;
 use Bakelite\DialPlan\UKDialPlan;
 use Bakelite\DialPlan\ExtensionDialPlan;
 use Bakelite\DialString;
-use Bakelite\Digit;
+use Bakelite\Dialler;
 
 // Monolog Logger
 $log = new Logger('bakelite');
@@ -75,8 +75,8 @@ try {
 	// This object records the number currently being dialled
 	$dialString = new DialString($log, $timerManager, $dialPlan);
 
-	// This object records the digit currently being dialled
-	$digit = new Digit();
+	// Create a Dialler to handle detection and collation of rotary events
+	$dialler = new Dialler($log, $phone, $dialString);
 
 	// Listen for and handle various BareSIP events
 	$bareSip->addEventListener('CALL_INCOMING', function($event) use ($bareSip, $phone) {
@@ -107,33 +107,8 @@ try {
 		$dialString->reset();
 	});
 
-	$phone->addEventListener('TRIG', function ($event) use ($bareSip, $phone, $digit, $dialString) {
-		// Only when the phone is off the hook
-		if ( ! $phone->isOffHook()) return;
-
-		// If this is the start, begin counting pulses on the Digit
-		if ($event['value']) {
-			$digit->start();
-		}
-		// End of a digit - get it and add it to the string
-		else {
-			$dialString->addDigit($digit->stop());
-		}
-	});
-
-	$phone->addEventListener('DIAL', function ($event) use ($digit, $phone) {
-		// Only when the phone is off the hook
-		if ( ! $phone->isOffHook()) return;
-
-		// Only count the 'on' part of the pulses
-		if ( ! $event['value']) return;
-
-		// Count the pulse
-		$digit->pulse();
-	});
-
-	// Listen for and handle DialString events
-	$dialString->addEventListener('COMPLETE', function ($event) use ($dialString, $bareSip) {
+	// Listen for and handle Dialler events
+	$dialler->addEventListener('COMPLETE', function ($event) use ($dialString, $bareSip) {
 		// Dial the number when the DialString is complete
 		$bareSip->call($dialString);
 	});

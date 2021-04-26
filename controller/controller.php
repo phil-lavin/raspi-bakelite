@@ -96,9 +96,19 @@ try {
 	});
 
 	// Listen for and handle Dialler events
-	$dialler->addEventListener('COMPLETE', function ($event) use ($dialString, $bareSip) {
+	$dialler->addEventListener('COMPLETE', function ($event) use ($bareSip, $phone) {
+		// Only when we're off the hook
+		if ( ! $phone->isOffHook()) return;
+
 		// Dial the number when the DialString is complete
-		$bareSip->call($dialString);
+		$bareSip->call($event['dialString']);
+	});
+
+	$dialler->addEventListener('NEW_DIGIT', function ($event) use ($bareSip, $phone) {
+		// Only when we're off the hook
+		if ( ! $phone->isOffHook()) return;
+
+		$bareSip->dtmf($event['digit']);
 	});
 
 	// Event loop runner

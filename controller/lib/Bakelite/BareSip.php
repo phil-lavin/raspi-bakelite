@@ -179,6 +179,11 @@ class BareSip implements Runnable, EventerInterface {
 		$this->sendCommand("dial {$number}");
 	}
 
+	// Sends DTMF when on a call
+	public function dtmf(string $digit) {
+		$this->sendCommand("sndcode {$digit}");
+	}
+
 	// Checks if BareSIP is alive by sending a ping type message
 	protected function ping($timeout = 250000) {
 		$this->sendCommand('main'); // Closest I could find to a 'ping'

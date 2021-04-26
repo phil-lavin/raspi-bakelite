@@ -15,6 +15,9 @@ trait Eventer {
 
 	// Fires event callbacks
 	protected function fireEvents(string $type, array $event) {
+		// Add instance of my own class to the event
+		$event['this'] = $this;
+
 		if (isset($this->eventCallbacks[$type])) {
 			foreach ($this->eventCallbacks[$type] as $callback) {
 				$callback($event, $type);

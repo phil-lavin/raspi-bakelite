@@ -25,6 +25,15 @@ class DialString implements Runnable, EventerInterface {
 		$this->dialPlan = $dialPlan;
 	}
 
+	protected function _fireEvents(string $type, array $extraData = []) {
+		$data = [
+			'dialString' => $this->getDialString()
+		];
+		$data += $extraData;
+
+		$this->fireEvents($type, $data);
+	}
+
 	public function addDigit(string $digit) {
 		// Reset timeout timer
 		$this->timerManager->removeTimerByName('dialstring');
@@ -32,13 +41,16 @@ class DialString implements Runnable, EventerInterface {
 			$this->reset();
 			$this->log->info("Dialling timeout exceeded");
 
-			$this->fireEvents('TIMEOUT', ['dialString'=>$this->getDialString()]);
+			$this->_fireEvents('TIMEOUT');
 		}), 'dialstring');
 
 		// Append digit to dial string
 		$this->dialString .= $digit;
 
 		$this->log->info("Dial string is currently {$this->getDialString()}");
+
+		// Fire a NEW_DIGIT event
+		$this->_fireEvents('NEW_DIGIT', ['digit'=>$digit]);
 	}
 
 	public function reset() {
@@ -71,7 +83,7 @@ class DialString implements Runnable, EventerInterface {
 	public function run() {
 		if ( ! $this->isComplete()) return;
 
-		$this->fireEvents('COMPLETE', ['dialString'=>$this->getDialString()]);
+		$this->_fireEvents('COMPLETE');
 
 		// Reset myself after firing the events
 		$this->reset();

@@ -116,6 +116,7 @@ class BareSip implements Runnable, EventerInterface {
 
 		// Read and parse the message
 		$event = socket_read($this->sock, $len);
+		$this->log->debug("Got message from BareSIP: " . $event);
 		if ( ! ($parsed = json_decode($event, true))) throw new \RuntimeException("The socket message wasn't properly formed JSON ({$event})");
 
 		// Discard the ,
@@ -133,7 +134,11 @@ class BareSip implements Runnable, EventerInterface {
 			return;
 		}
 
-		$callback($response['data']);
+		// Call the callback
+		$rtn = $callback($response['data']);
+
+		// If the callback returned false then it wants to remain the active callback for handling responses
+		if ($rtn === false) $this->responseCallbacks->push($callback);
 	}
 
 	// Reads a JSON message from the socket and fires the appropriate callback(s)
@@ -146,8 +151,6 @@ class BareSip implements Runnable, EventerInterface {
 		}
 
 		if ($message) {
-			$this->log->debug("Got message: " . print_r($message, true));
-
 			if (isset($message['event']) && $message['event'] == 'true') {
 				$this->log->info("Got event of type {$message['type']}");
 				$this->fireEvents($message['type'], $message);
@@ -172,6 +175,8 @@ class BareSip implements Runnable, EventerInterface {
 		$dataStr = strlen($data) . ':' . $data . ',';
 
 		@socket_write($this->sock, $dataStr);
+
+		$this->log->debug("Sent command to BareSIP: {$dataStr}");
 	}
 
 	// Creates a new outbound call
@@ -192,8 +197,13 @@ class BareSip implements Runnable, EventerInterface {
 
 		// Bind a response listener to listen for the response to the 'ping'
 		$this->addResponseListener(function($response) use (&$gotResponse) {
-			if (strpos($response, 'main loop') !== false)
+			if (strpos($response, 'main loop') !== false) {
 				$gotResponse = true;
+				return true;
+			}
+
+			// If response didn't contain 'main loop' then we want to continue to wait for more responses
+			return false;
 		});
 
 		// Use a TimedRunner to wait for the response for $timeout uSeconds

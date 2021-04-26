@@ -85,11 +85,11 @@ try {
 
 	// Listen for and handle various Phone events
 	$phone->addEventListener('RECEIVER_UP', function($event) use ($bareSip, $phone, $dialString) {
-		// We are currently ringing, thus this is us answering the call
-		if ($phone->isRinging()) {
-			$phone->stopRinging();
-			$bareSip->sendCommand('accept');
-		}
+		// Only when we're ringing - this is the user answering a ringing call
+		if ( ! $phone->isRinging()) return;
+
+		$phone->stopRinging();
+		$bareSip->sendCommand('accept');
 	});
 
 	$phone->addEventListener('RECEIVER_DOWN', function($event) use ($bareSip, $phone, $dialString) {

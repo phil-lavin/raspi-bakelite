@@ -47,7 +47,7 @@ try {
 	// Set up connection to BareSIP
 	$bareSip = new BareSip($log, $timerManager);
 
-	// Build a Ringer object
+	// Build a Ringer object from config
 	$ringer = new Ringer($log, $timerManager, $ringerFile);
 
 	foreach (array_values($ringPattern) as $k=>$interval) {
@@ -65,7 +65,7 @@ try {
 
 	$phone = new Phone($log, $timerManager, $ringer, $eventLoop);
 
-	// Decorate the dial plans
+	// Set up the dial plans - we want a UK Dial Plan with Extensions support
 	$dialPlan = (new ExtensionDialPlan($log, new UKDialPlan($log)));
 
 	foreach ($extensions as $extension) {
@@ -80,9 +80,9 @@ try {
 
 	// Listen for and handle various BareSIP events
 	$bareSip->addEventListener('CALL_INCOMING', function($event) use ($bareSip, $phone) {
-		if ($phone->isOffHook()) return;
+		// One at a time, please
+		if ($phone->isOffHook() || $phone->isRinging()) return;
 
-		$phone->stopRinging();
 		$phone->ring();
 	});
 

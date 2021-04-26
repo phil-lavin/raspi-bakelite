@@ -8,8 +8,9 @@ use Async\Timer;
 use Async\Runnable;
 use Async\Runner\CallbackRunner;
 use Async\Runner\TimedRunner;
+use Async\EventerInterface;
 
-class BareSip implements Runnable {
+class BareSip implements Runnable, EventerInterface {
 	use \Async\Eventer;
 
 	protected $log;

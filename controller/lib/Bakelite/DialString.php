@@ -5,10 +5,11 @@ namespace Bakelite;
 use Monolog\Logger;
 use Async\Timer;
 use Async\Timer\TimerManager;
+use Async\EventerInterface;
 use Bakelite\DialPlan;
 
 // Represents a dial string currently being constructed
-class DialString {
+class DialString implements EventerInterface {
 	use \Async\Eventer;
 
 	protected $log;

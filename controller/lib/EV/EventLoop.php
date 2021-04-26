@@ -4,8 +4,9 @@ namespace EV;
 
 use Monolog\Logger;
 use Async\Runnable;
+use Async\EventerInterface;
 
-class EventLoop implements Runnable {
+class EventLoop implements Runnable, EventerInterface {
 	use \Async\Eventer;
 
 	protected $log;

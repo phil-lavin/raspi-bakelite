@@ -51,9 +51,9 @@ try {
 
 	// Set up interface to the phone's hardware
 	$phoneEventLoop = (new EventLoop($log))
+		->addEventInput('DIAL', $diallerFile) // Add dial first so that we always check if before TRIG, else sometimes we'll miss pulses
 		->addEventInput('HANG', $hangerFile)
-		->addEventInput('TRIG', $triggerFile)
-		->addEventInput('DIAL', $diallerFile);
+		->addEventInput('TRIG', $triggerFile);
 
 	$phone = new Phone($log, $timerManager, $ringer, $phoneEventLoop);
 

@@ -67,7 +67,9 @@ try {
 	$dialler = new Dialler($log, $phone, $dialString);
 
 	// Listen for and handle various BareSIP events
-	$bareSip->addEventListener('CALL_INCOMING', function($event) use ($bareSip, $phone) {
+	$bareSip->addEventListener('CALL_INCOMING', function($event) use ($bareSip, $phone, $log) {
+		$log->info("New incoming call");
+
 		// One at a time, please
 		if ($phone->isOffHook() || $phone->isRinging()) {
 			$bareSip->sendCommand('hangup');
@@ -77,12 +79,16 @@ try {
 		$phone->ring();
 	});
 
-	$bareSip->addEventListener('CALL_CLOSED', function ($event) use ($bareSip, $phone) {
+	$bareSip->addEventListener('CALL_CLOSED', function ($event) use ($bareSip, $phone, $log) {
+		$log->info("Call ended");
+
 		$phone->stopRinging();
 	});
 
 	// Listen for and handle various Phone events
-	$phone->addEventListener('RECEIVER_UP', function($event) use ($bareSip, $phone, $dialString) {
+	$phone->addEventListener('RECEIVER_UP', function($event) use ($bareSip, $phone, $dialString, $log) {
+		$log->info("Receiver is up");
+
 		// Only when we're ringing - this is the user answering a ringing call
 		if ( ! $phone->isRinging()) return;
 
@@ -90,7 +96,9 @@ try {
 		$bareSip->sendCommand('accept');
 	});
 
-	$phone->addEventListener('RECEIVER_DOWN', function($event) use ($bareSip, $phone, $dialString) {
+	$phone->addEventListener('RECEIVER_DOWN', function($event) use ($bareSip, $phone, $dialString, $log) {
+		$log->info("Receiver is down");
+
 		// Assume we're on a call and send hangup. We might not be, but it doesn't matter
 		$bareSip->sendCommand('hangup');
 
@@ -99,7 +107,9 @@ try {
 	});
 
 	// Listen for and handle Dialler events
-	$dialler->addEventListener('COMPLETE', function ($event) use ($bareSip, $phone) {
+	$dialler->addEventListener('COMPLETE', function ($event) use ($bareSip, $phone, $log) {
+		$log->info("Dialing complete: {$event['dialstring']}");
+
 		// Only when we're off the hook
 		if ( ! $phone->isOffHook()) return;
 
@@ -107,7 +117,9 @@ try {
 		$bareSip->call($event['dialString']);
 	});
 
-	$dialler->addEventListener('NEW_DIGIT', function ($event) use ($bareSip, $phone) {
+	$dialler->addEventListener('NEW_DIGIT', function ($event) use ($bareSip, $phone, $log) {
+		$log->info("New digit: {$event['digit']}");
+
 		// Only when we're off the hook
 		if ( ! $phone->isOffHook()) return;
 

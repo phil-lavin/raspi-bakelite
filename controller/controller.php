@@ -69,7 +69,10 @@ try {
 	// Listen for and handle various BareSIP events
 	$bareSip->addEventListener('CALL_INCOMING', function($event) use ($bareSip, $phone) {
 		// One at a time, please
-		if ($phone->isOffHook() || $phone->isRinging()) return;
+		if ($phone->isOffHook() || $phone->isRinging()) {
+			$bareSip->sendCommand('hangup');
+			return;
+		}
 
 		$phone->ring();
 	});

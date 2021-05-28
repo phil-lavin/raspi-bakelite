@@ -108,6 +108,7 @@ try {
 		// Only when we're off the hook
 		if ( ! $phone->isOffHook()) return;
 
+		// @TODO: Only send this when we're on a call
 		$bareSip->dtmf($event['digit']);
 	});
 
